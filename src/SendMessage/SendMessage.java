@@ -1,49 +1,69 @@
 package SendMessage;
 
 import javax.swing.*;
-
 import java.awt.*;
 import java.awt.datatransfer.*;
 import java.awt.event.*;
+import java.io.IOException;
 
 public class SendMessage extends JFrame {
     
-    public static JTextArea target = new JTextArea("内容");
-    public static JTextField num = new JTextField("次数");
-    public static JTextField interval = new JTextField("间隔时间");
+    static JTextArea target = new JTextArea("内容");
+    static JTextField num = new JTextField("次数");
+    static JTextField interval = new JTextField("间隔时间");
 
-    public static JButton send = new JButton("发送");
+    static JButton send = new JButton("发送");
+
+    static JMenuBar mber = new JMenuBar();
+    static JMenu menu1 = new JMenu("更多");
+    static JMenuItem item1 = new JMenuItem("官网");
 
     //初始化窗口
+    /**先初始化信准备部分
+     * 再初始化确定发送部分和菜单栏部分
+     */
     void InitWd(){
+        // JFrame JF = new thisrame();
         //窗口的设置
-        this.setSize(400,260);
+        this.setSize(400,300);
         this.setLocationRelativeTo(null);
         this.setTitle("自动发消息");
         this.setLayout(new BorderLayout());
         this.setResizable(false);
 
-        
+        Image icon = (new ImageIcon("./Send.ico").getImage());
+        this.setIconImage(icon);
+
+        JPanel p = new JPanel(new BorderLayout());
+        p.setBackground(new Color(248,248,255));
         
         //信息准备部分-----------------------------------------------(1)
         JPanel JP1 = new JPanel();
         JP1.setLayout(new BoxLayout(JP1, BoxLayout.Y_AXIS));
+        JP1.setOpaque(false);
 
+        
         JPanel JP1_1 = new JPanel();
         JPanel JP1_2 = new JPanel();
-        JP1_1.setLayout(new FlowLayout(FlowLayout.CENTER));
-        JP1_2.setLayout(new FlowLayout(FlowLayout.CENTER));
+        JP1_1.setLayout(new FlowLayout(FlowLayout.CENTER,15,5));
+        JP1_2.setLayout(new FlowLayout(FlowLayout.CENTER,15,5));
+        JP1_1.setOpaque(false);
+        JP1_2.setOpaque(false);
         
         //组件的设置
         JLabel JL1 = new JLabel("发送内容");
         JLabel JL2 = new JLabel("发送间隔");
+        JLabel explanation = new JLabel("单位为毫秒!!!");
 
         Font JLFONT = new Font("黑体",Font.PLAIN,20);
         JL1.setFont(JLFONT);
         JL2.setFont(JLFONT);
 
+        Font ExFont = new Font("黑体",Font.PLAIN,15);
+        explanation.setFont(ExFont);
+
         // target.setPreferredSize(new Dimension(200, 22));
-        interval.setPreferredSize(new Dimension(200, 22));
+        interval.setPreferredSize(new Dimension(200, 25));
         target.setLineWrap(true);
         target.setWrapStyleWord(true);
         
@@ -56,15 +76,18 @@ public class SendMessage extends JFrame {
         JP1_2.add(JL2);
         JP1_1.add(jsc);
         JP1_2.add(interval);
-        
+        JP1_2.add(explanation);
         
         JP1.add(JP1_1);
         JP1.add(JP1_2);
-        this.add(JP1);
-        
+        p.add(JP1);
+
+
+
         //确定发送部分-----------------------------------------------(2)
         JPanel JP2 = new JPanel();
         JP2.setLayout(new FlowLayout(FlowLayout.CENTER));
+        JP2.setOpaque(false);
         
         //组件的设置
         JLabel JL3 = new JLabel("发送次数");
@@ -72,15 +95,26 @@ public class SendMessage extends JFrame {
 
         num.setPreferredSize(new Dimension(50,22));
 
-        
+        send.setBackground(new Color(220,220,220));
         
         //添加组件
         JP2.add(JL3);
         JP2.add(num);
         JP2.add(send);
         
-        this.add(JP2,BorderLayout.SOUTH);  
+        p.add(JP2,BorderLayout.SOUTH);
         
+        
+        //设置菜单栏
+        Font menuFont = new Font("微软雅黑",Font.BOLD,15);
+        menu1.setFont(menuFont);
+        mber.setFont(menuFont);
+        menu1.add(item1);
+        mber.add(menu1);
+        this.setJMenuBar(mber);
+        
+        this.add(p);
+
         //关闭窗口，推出程序
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         this.setVisible(true);
@@ -131,14 +165,26 @@ public class SendMessage extends JFrame {
         ActionListener listener = new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent e){
-                try {
-                    sd.StartSend(target.getText(),Integer.parseInt(num.getText()),Integer.parseInt(interval.getText()));
-                } catch (Exception e1) {
-                    System.out.println("here2");
+                String actionCommand = e.getActionCommand();//这个字符串就是按钮上的文字
+                // System.out.println("I'm buttun"+actionCommand);
+                if (actionCommand == "发送") {
+                    try {
+                        sd.StartSend(target.getText(),Integer.parseInt(num.getText()),Integer.parseInt(interval.getText()));
+                    } catch (Exception e1) {
+                        System.out.println("Here is something wrong!");
+                    }
+                }else if (actionCommand == "官网") {
+                    try {
+                        //打开默认浏览器并输入网址
+                        Runtime.getRuntime().exec("cmd /c start  https://xunwu.eu.org/");
+                    } catch (IOException e1) {
+                        System.out.println("There is something wrong when open the browser");
+                    }
                 }
             }
         };
 
         send.addActionListener(listener);
+        item1.addActionListener(listener);
     }
 }
